@@ -1,0 +1,40 @@
+{
+  "name": "mongoose-fakeremove",
+  "version": "0.1.0",
+  "description": "fake remove for mongoose",
+  "main": "index.js",
+  "dependencies": {
+    "mongoose": "*",
+    "coffee-script": "*",
+    "mongoose-query-hook": "git+https://github.com/Mikxail/mongoose-query-hook.git"
+  },
+  "devDependencies": {
+    "should": "~4.0.4",
+    "coffee-script": "~1.7.1",
+    "mocha": "~1.20.1"
+  },
+  "scripts": {
+    "test": "mocha -R spec --compilers coffee:coffee-script/register"
+  },
+  "keywords": [
+    "mongodb",
+    "mongoose",
+    "plugin",
+    "fake",
+    "remove",
+    "delete"
+  ],
+  "author": "Mikhail Konovalov <mikxail.k@gmail.com>",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Mikxail/mongoose-fakeremove.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mikxail/mongoose-fakeremove/issues"
+  }
+}
