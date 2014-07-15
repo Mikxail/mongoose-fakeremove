@@ -58,6 +58,26 @@ describe "Without fakeremove", ->
 								users.should.be.lengthOf 0
 								done()
 
+	it "on remove document and call post 'remove'", (done) ->
+		UserSchema2 = new mongoose.Schema
+			name: String
+			num: Number
+		UserSchema2.post 'remove', (doc) ->
+			doc.should.be.a.Object
+			done()
+
+		User2 = db.model 'user2', UserSchema2
+
+		User2.create data, (err) ->
+			should(err).not.be.ok
+
+			User2.findOne {}, (err, user) ->
+				should(err).not.be.ok
+				should(user).be.ok
+				user.remove (err) ->
+					should(err).not.be.ok
+
+
 describe "Fakeremove", ->
 	beforeEach (done) ->
 		UserSchema.plugin fakeremove
@@ -98,6 +118,16 @@ describe "Fakeremove", ->
 					users.should.be.a.Array
 					users.should.have.lengthOf 3
 					done()
+
+	it "on remove document and call post 'remove'", (done) ->
+		UserSchema.post 'remove', (doc) ->
+			doc.should.be.a.Object
+			done()
+
+		User.findOne {}, (err, user) ->
+			should(err).not.be.ok
+			user.remove (err) ->
+				should(err).not.be.ok
 
 	it "on remove model with query", (done) ->
 		User.remove {name: 'name2'}, (err, count) ->

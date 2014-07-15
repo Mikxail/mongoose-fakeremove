@@ -16,8 +16,8 @@ pathMongoose = ->
 
 	if minorVersion is 6
 		Model::remove = wrap Model::remove, (origFn, callback) ->
-			if not @$__._real_remove
-				@update({$set: {deletedAt: Date.now()}}).withoutpre callback
+			if not @$__._real_remove and @schema?._useFakeRemove
+				@fakeremove callback
 			else
 				origFn.call @, callback
 
@@ -62,7 +62,10 @@ module.exports = (schema, options) ->
 	schema._useFakeRemove = true
 
 	schema.methods.fakeremove = (callback) ->
-		@update({$set: {deletedAt: Date.now()}}).withoutpre callback
+		@update({$set: {deletedAt: Date.now()}}).withoutpre (err) =>
+			return callback.apply @, arguments if err?
+			@emit 'remove', @
+			callback.apply @, arguments
 
 	schema.methods.realremove = (callback) ->
 		@$__._real_remove = true
