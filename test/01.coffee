@@ -15,10 +15,15 @@ beforeEach (done) ->
 		num: Number
 	UserSchema.plugin fakeremove
 	User = db.model 'user', UserSchema
-	User.create data, done
+	if User.realremove?
+		User.realremove ->
+			User.create data, done
+	else
+		User.remove ->
+			User.create data, done
 
 afterEach (done) ->
-	User.realremove ->
+	db.db.dropDatabase ->
 		UserSchema = undefined
 		User = undefined
 		db.close ->
@@ -79,10 +84,6 @@ describe "Without fakeremove", ->
 
 
 describe "Fakeremove", ->
-	beforeEach (done) ->
-		UserSchema.plugin fakeremove
-		done()
-
 	it "on remove document", (done) ->
 		User.findOne {}, (err, user) ->
 			should(err).not.be.ok
@@ -313,3 +314,45 @@ describe "Fakeremove", ->
 							users.should.containEql('name3')
 							users.should.not.containEql('name2')
 							done()
+
+	it "on work fine without schema", (done) ->
+		User3 = db.model 'user', "user4"
+		User3.create data, (err) ->
+			should(err).not.be.ok
+			User3.find().withoutpre (err, users) ->
+				should(err).not.be.ok
+				users.should.be.a.Array
+				users.should.have.lengthOf 3
+
+				User3.remove {name: 'name2'}, (err, count) ->
+					should(err).not.be.ok
+					count.should.be.equal 1
+
+					User3.find().withoutpre (err, users) ->
+						should(err).not.be.ok
+						users.should.be.a.Array
+						users.should.be.lengthOf 3
+
+						User3.find (err, users) ->
+							should(err).not.be.ok
+							users.should.be.a.Array
+							users.should.be.lengthOf 2
+							done()
+
+	it "remove worked without schema", (done) ->
+		User3 = db.model 'user', "user4"
+		User3.create data, (err) ->
+			should(err).not.be.ok
+			User3.remove {}, (err, count) ->
+				should(err).not.be.ok
+				count.should.be.equal 3
+				User3.find().withoutpre (err, users) ->
+					should(err).not.be.ok
+					users.should.be.a.Array
+					users.should.be.lengthOf 3
+					done()
+
+
+
+
+

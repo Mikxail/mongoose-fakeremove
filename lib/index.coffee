@@ -9,7 +9,6 @@ wrap = (fn, wrap) ->
 
 isPatched = false
 pathMongoose = ->
-	mongoose.__path_fq ?= 0
 	return if isPatched
 	isPatched = true
 	minorVersion = +mongoose.version.split(".")[1]
@@ -31,7 +30,7 @@ pathMongoose = ->
 
 		Query::unremove = (callback) ->
 			@setOptions {multi: true}
-			@withoutpre().where('deletedAt').ne(null).update {$set: {deletedAt: null}}, callback
+			@withoutpre().where('deletedAt').exists(true).update {$unset: {deletedAt: 1}}, callback
 
 
 		Query::remove = wrap Query::remove, (origFn, args...) ->
@@ -47,16 +46,15 @@ pathMongoose = ->
 		Query::remove = (cond, callback) ->
 			true
 
-
 module.exports = (schema, options) ->
 	pathMongoose()
+	return if schema._useFakeRemove is true
 	schema.add {deletedAt: Date}
-	schema.path('deletedAt').default -> null
 	schema.path('deletedAt').index {sparse: true}
 
 	schema.plugin queryHook,
 		preQuery: (op, next) ->
-			@where("deletedAt", null)
+			@where("deletedAt").exists(false)
 			next()
 
 	schema._useFakeRemove = true
@@ -72,7 +70,7 @@ module.exports = (schema, options) ->
 		@remove callback
 
 	schema.methods.unremove = (callback) ->
-		@update({$set: {deletedAt: null}}).withoutpre callback
+		@update({$unset: {deletedAt: 1}}).withoutpre callback
 
 	schema.statics.realremove = (cond, callback) ->
 		if typeof cond is "function"
