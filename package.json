@@ -6,7 +6,7 @@
   "dependencies": {
     "mongoose": "3.6",
     "coffee-script": "*",
-    "mongoose-query-hook": "git+https://github.com/Mikxail/mongoose-query-hook.git"
+    "mongoose-query-hook": "git://github.com/mikxail/mongoose-query-hook.git"
   },
   "devDependencies": {
     "should": "~4.0.4",
