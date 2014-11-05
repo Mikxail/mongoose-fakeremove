@@ -51,7 +51,7 @@ module.exports = (schema, options) ->
 	return if schema._useFakeRemove is true
 	schema.add {deletedAt: Date}
 #	schema.path('deletedAt').index {sparse: true}
-	schema.path('deletedAt').index {sparse: false}
+	schema.path('deletedAt').index(true)
 
 
 	schema.plugin queryHook,
