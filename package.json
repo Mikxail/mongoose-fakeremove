@@ -1,6 +1,6 @@
 {
   "name": "mongoose-fakeremove",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "fake remove for mongoose",
   "main": "index.js",
   "dependencies": {
