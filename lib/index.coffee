@@ -50,7 +50,9 @@ module.exports = (schema, options) ->
 	pathMongoose()
 	return if schema._useFakeRemove is true
 	schema.add {deletedAt: Date}
-	schema.path('deletedAt').index {sparse: true}
+#	schema.path('deletedAt').index {sparse: true}
+	schema.path('deletedAt').index {sparse: false}
+
 
 	schema.plugin queryHook,
 		preQuery: (op, next) ->
